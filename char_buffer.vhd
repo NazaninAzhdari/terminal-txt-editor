@@ -2,14 +2,20 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
+library work;
+use work.font_pack.pc_ASCII_ENTER;
+use work.font_pack.pc_ASCII_BACKSPACE;
+
 entity char_buffer is
     generic (
-        g_COL_NUM       :   integer     :=40;                       --Maximum number of columns
-        g_ROW_NUM       :   integer     :=30;                       --Maximum Number of Rows
-        g_RAM_SIZE      :   integer     :=g_COL_NUM * g_ROW_NUM;    --Size of RAM (1200)
-        g_COL_BIT_WIDTH :   integer     :=6;                        --Minimum bit-width required to represent the columns (.e.g. 0 to 40)
-        g_ROW_BIT_WIDTH :   integer     :=5;                        --minimum bit-width required to represent the rows (.e.g. 0 to 30)
-        g_RAM_BIT_WIDTH :   integer     :=11                        --Minimum bit-width required to represent the address of RAM from 0 to 1200
+        g_SCALE         :   integer     :=8;
+        g_LOG2_SCALE    :   integer     :=3;
+        g_COL_NUM       :   integer     :=640/ g_SCALE;             --Maximum number of columns (640 /8)
+        g_ROW_NUM       :   integer     :=480 / g_SCALE;            --Maximum Number of Rows (480 / 8)
+        g_RAM_SIZE      :   integer     :=g_COL_NUM * g_ROW_NUM;    --Size of RAM (4800)
+        g_COL_BIT_WIDTH :   integer     :=7;                        --Minimum bit-width required to represent the columns (.e.g. 0 to 80)
+        g_ROW_BIT_WIDTH :   integer     :=6;                        --minimum bit-width required to represent the rows (.e.g. 0 to 60)
+        g_RAM_BIT_WIDTH :   integer     :=13                        --Minimum bit-width required to represent the address of RAM from 0 to 4800
     );
     port (
         i_clk           :   in      STD_LOGIC;
@@ -17,7 +23,8 @@ entity char_buffer is
         i_write_EN      :   in      STD_LOGIC;
         i_ASCII_code    :   in      unsigned(7 downto 0);
         i_read_EN       :   in      STD_LOGIC;
-        i_read_addr     :   in      unsigned(g_RAM_BIT_WIDTH-1 downto 0);  --address from 0 to 1200
+        i_x             :   in      unsigned(9 downto 0);
+        i_y             :   in      unsigned(9 downto 0);
         o_ASCII_code    :   out     unsigned(7 downto 0);
         o_column        :   out     unsigned(g_COL_BIT_WIDTH-1 downto 0);
         o_row           :   out     unsigned(g_ROW_BIT_WIDTH-1 downto 0)
@@ -25,21 +32,21 @@ entity char_buffer is
 end char_buffer;
 
 architecture RTL of char_buffer is
-    constant c_DELETE_CODE  :   unsigned(7 downto 0)                :=
-    constant c_ENTER_CODE   :   unsigned(7 downto 0)                :=
-
+    --RAM
     type RAM is array ( 0 to g_RAM_SIZE-1) of unsigned(7 downto 0);
-    signal r_CHAR_RAM       :   RAM                                 :=(others=>c_DELETE_CODE);
+    signal r_CHAR_RAM       :   RAM                                 :=(others=>pc_ASCII_BACKSPACE);
 
+    --Signals
     signal r_column         :   integer range 0 to g_COL_NUM-1      :=0;
     signal r_row            :   integer range 0 to g_ROW_NUM-1      :=0;
     signal i                :   integer range 0 to g_RAM_SIZE-1     :=0;
     signal r_write_addr     :   integer range 0 to g_RAM_SIZE-1     :=0;
     signal r_read_addr      :   integer range 0 to g_RAM_SIZE-1     :=0;
+    signal r_x_div_scale    :   integer range 0 to g_COL_NUM-1      :=0;
+    signal r_y_div_scale    :   integer range 0 to g_ROW_NUM-1      :=0;
 
     begin
-        
-        character_buffer: process(i_clk) is
+        dual_port_RAM: process(i_clk) is
             begin
                 if rising_edge(i_clk) then
                     if i_reset = '1' then
@@ -47,7 +54,7 @@ architecture RTL of char_buffer is
                         r_row <= 0;
 
                         if i < g_RAM_SIZE-1 then
-                            r_CHAR_RAM(i) <= c_DELETE_CODE;
+                            r_CHAR_RAM(i) <= pc_ASCII_BACKSPACE;
                             i <= i + 1;
                             if i = g_RAM_SIZE-1 then
                                 i <= 0;
@@ -59,7 +66,7 @@ architecture RTL of char_buffer is
                         if i_write_EN = '1' then
                             r_CHAR_RAM(r_write_addr) <= i_ASCII_code;
                             -- Check out to see what that ASCII code is.
-                            if i_ASCII_code = c_DELETE_CODE then
+                            if i_ASCII_code = pc_ASCII_BACKSPACE then
                                 if r_column > 0 then
                                     r_column <= r_column -1;
                                     r_row <= r_row;
@@ -70,7 +77,7 @@ architecture RTL of char_buffer is
                                     end if;
                                 end if;
 
-                            elsif i_ASCII_code = c_ENTER_CODE then
+                            elsif i_ASCII_code = pc_ASCII_ENTER then
                                 if r_row < g_ROW_NUM -1 then
                                     r_column <= 0
                                     r_row <= r_row + 1;
@@ -101,24 +108,37 @@ architecture RTL of char_buffer is
             end process;
 
         -----------------------------------------------------------------------
-        -- Computing the address of RAM based on column number and Row number
+        -- Computing the address of RAM based on column number and Row number (write address)
         -----------------------------------------------------------------------
         -- (Column, Row)    | Address
         -- (0, 0)           | 0
         -- (1, 0)           | 1
         -- (2, 0)           | 2
         --  . . .           | . 
-        -- (0, 1)           | 40
-        -- (1, 1)           | 41
-        -- (2, 1)           | 42
+        -- (0, 1)           | 80
+        -- (1, 1)           | 81
+        -- (2, 1)           | 82
         --  . . .           | . 
-        -- (39,29)          | 1199
+        -- (79,59)          | 4799
         r_write_addr <= r_col + (r_row * g_COL_NUM);
 
-        ---------------------------------------
-        -- Convert read-adrress to integer
-        ---------------------------------------
-        r_read_addr <= to_integer(i_red_addr);
+
+        -----------------------------------------------------------------------
+        -- Computing the address of RAM based on X/Y cordinates (read address)
+        -----------------------------------------------------------------------
+        -- (X, Y)           | Address
+        -- (0, 0)           | 0
+        -- (1, 0)           | 1
+        -- (2, 0)           | 2
+        --  . . .           | . 
+        -- (0, 1)           | 80
+        -- (1, 1)           | 81
+        -- (2, 1)           | 82
+        --  . . .           | . 
+        -- (79,59)          | 4799
+        r_x_div_scale <= to_integer(i_x(i_x'left downto g_LOG2_SCALE));   -- i_x / SCALE
+        r_y_div_scale <= to_integer(i_y(i_y'left downto g_LOG2_SCALE));   -- i_y / SCALE
+        r_read_addr <= r_x_div_scale + (r_y_div_scale  * g_COL_NUM);
 
         o_column <= to_unsigned(r_column, o_column'length);
         o_row <= to_unsigned(r_row, o_row'length);
