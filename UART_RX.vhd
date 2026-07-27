@@ -56,12 +56,11 @@ architecture RTL of UART_RX is
                         when IDLE =>
                             r_clk_counter <= 0;
                             r_bit_counter <= 0;
-
+                            r_DV <= '0';
                             -------------------------------------------------------------
                             --Detect the falling edge of the start bit.
                             -------------------------------------------------------------
                             if i_data_serial = '0' and r_data_serial = '1' then
-								r_DV <= '0';
                                 r_SM <= START_BIT;
                             end if;
 
