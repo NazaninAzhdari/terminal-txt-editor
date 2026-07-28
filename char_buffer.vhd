@@ -8,10 +8,10 @@ use work.font_pack.pc_ASCII_BACKSPACE;
 
 entity char_buffer is
     generic (
-        g_SCALE         :   integer     :=8;
-        g_LOG2_SCALE    :   integer     :=3;
-        g_COL_NUM       :   integer     :=640/ g_SCALE;             --Maximum number of columns (640 /8)
-        g_ROW_NUM       :   integer     :=480 / g_SCALE;            --Maximum Number of Rows (480 / 8)
+        g_SCALE         :   integer     :=8;                        --Size of Each character
+        g_LOG2_SCALE    :   integer     :=3;                        --log2(scale)
+        g_COL_NUM       :   integer     :=80;                       --Maximum number of columns (640 /8)
+        g_ROW_NUM       :   integer     :=60;                       --Maximum Number of Rows (480 / 8)
         g_RAM_SIZE      :   integer     :=g_COL_NUM * g_ROW_NUM;    --Size of RAM (4800)
         g_COL_BIT_WIDTH :   integer     :=7;                        --Minimum bit-width required to represent the columns (.e.g. 0 to 80)
         g_ROW_BIT_WIDTH :   integer     :=6;                        --minimum bit-width required to represent the rows (.e.g. 0 to 60)
