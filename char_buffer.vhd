@@ -5,7 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.font_pack.pc_ASCII_ENTER;
 use work.font_pack.pc_ASCII_BACKSPACE;
-use work.font_pack.pc_ASCII_CAPITAL_A;
+use work.font_pack.pc_ASCII_SPACE;
 
 entity char_buffer is
     generic (
@@ -54,10 +54,10 @@ architecture RTL of char_buffer is
                         r_column <= 0;
                         r_row <= 0;
 
-                        if i < g_RAM_SIZE-1 then
-                            r_CHAR_RAM(i) <= pc_ASCII_BACKSPACE;
+                        if i <= g_RAM_SIZE-1 then
+                            r_CHAR_RAM(i) <= pc_ASCII_SPACE;
                             i <= i + 1;
-                            if i = g_RAM_SIZE-1 then
+                            if i > g_RAM_SIZE-1 then
                                 i <= 0;
                             end if;
                         end if;
@@ -65,9 +65,9 @@ architecture RTL of char_buffer is
                     else
                         --If an ASCII code has recieved, write it into the RAM
                         if i_write_EN = '1' then
-                            r_CHAR_RAM(r_write_addr) <= i_ASCII_code;
                             -- Check out to see what that ASCII code is.
                             if i_ASCII_code = pc_ASCII_BACKSPACE then
+                                r_CHAR_RAM(r_write_addr-1) <= i_ASCII_code;
                                 if r_column > 0 then
                                     r_column <= r_column -1;
                                     r_row <= r_row;
@@ -79,12 +79,14 @@ architecture RTL of char_buffer is
                                 end if;
 
                             elsif i_ASCII_code = pc_ASCII_ENTER then
+                                r_CHAR_RAM(r_write_addr) <= i_ASCII_code;
                                 if r_row < g_ROW_NUM -1 then
                                     r_column <= 0;
                                     r_row <= r_row + 1;
                                 end if;
 
                             else  --Normal character
+                                r_CHAR_RAM(r_write_addr) <= i_ASCII_code;
                                 if r_column < g_COL_NUM -1 then
                                     r_column <= r_column + 1;
                                     r_row <= r_row;

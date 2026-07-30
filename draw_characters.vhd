@@ -136,8 +136,9 @@ architecture RTL of draw_characters is
                         when pc_ASCII_QUESTION => o_draw <= pc_DRAW_QUESTION(r_y - r_y_start_char)(r_x - r_x_start_char); -- ?
                         when pc_ASCII_AT  => o_draw <= pc_DRAW_AT(r_y - r_y_start_char)(r_x - r_x_start_char); -- @
                         -- Control lines
-                        when pc_ASCII_SPACE => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);
+                        
                         when pc_ASCII_BACKSPACE => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);
+						when pc_ASCII_SPACE => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);
                         when pc_ASCII_ENTER => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);
                         when others => o_draw <= pc_DRAW_UNKNOWN(r_y - r_y_start_char)(r_x - r_x_start_char);
                     end case;

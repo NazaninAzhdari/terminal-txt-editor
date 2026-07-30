@@ -93,10 +93,10 @@ architecture RTL of txt_editor_top is
         UART_reciever: entity work.UART_RX
         generic map (
             g_BITS_LIMIT   => 8,
-            g_CLKS_PER_BIT => 434    
+            g_CLKS_PER_BIT => 217    
         )
         port map(
-            i_clk                => i_clk,
+            i_clk                => W_clk25,
             i_reset              => w_reset,
             i_data_serial        => i_UART_RX,
             o_data_parallel      => w_ascii_code,
@@ -119,7 +119,7 @@ architecture RTL of txt_editor_top is
             g_RAM_BIT_WIDTH => c_RAM_BIT_WIDTH               --Minimum bit-width required to represent the address of RAM from 0 to 4800
         )
         port map (
-            i_clk           => i_clk,
+            i_clk           => W_clk25,
             i_reset         => w_reset,
             i_write_EN      => w_ASCCI_DV,
             i_ASCII_code    => w_ASCII_code,
@@ -171,7 +171,6 @@ architecture RTL of txt_editor_top is
             i_y             => w_y,
             o_draw_cursor   => w_draw_cursor
         );
-
 
         o_HDMI_video <= (others=>'1') when (w_draw_char = '1' or w_draw_cursor = '1') and w_DE = '1' else (others=>'0');
 
