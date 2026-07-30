@@ -5,6 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.font_pack.pc_ASCII_ENTER;
 use work.font_pack.pc_ASCII_BACKSPACE;
+use work.font_pack.pc_ASCII_CAPITAL_A;
 
 entity char_buffer is
     generic (
@@ -12,7 +13,7 @@ entity char_buffer is
         g_LOG2_SCALE    :   integer     :=3;                        --log2(scale)
         g_COL_NUM       :   integer     :=80;                       --Maximum number of columns (640 /8)
         g_ROW_NUM       :   integer     :=60;                       --Maximum Number of Rows (480 / 8)
-        g_RAM_SIZE      :   integer     :=g_COL_NUM * g_ROW_NUM;    --Size of RAM (4800)
+        g_RAM_SIZE      :   integer     :=4800;    					  --Size of RAM (4800)
         g_COL_BIT_WIDTH :   integer     :=7;                        --Minimum bit-width required to represent the columns (.e.g. 0 to 80)
         g_ROW_BIT_WIDTH :   integer     :=6;                        --minimum bit-width required to represent the rows (.e.g. 0 to 60)
         g_RAM_BIT_WIDTH :   integer     :=13                        --Minimum bit-width required to represent the address of RAM from 0 to 4800
@@ -79,7 +80,7 @@ architecture RTL of char_buffer is
 
                             elsif i_ASCII_code = pc_ASCII_ENTER then
                                 if r_row < g_ROW_NUM -1 then
-                                    r_column <= 0
+                                    r_column <= 0;
                                     r_row <= r_row + 1;
                                 end if;
 
@@ -120,7 +121,7 @@ architecture RTL of char_buffer is
         -- (2, 1)           | 82
         --  . . .           | . 
         -- (79,59)          | 4799
-        r_write_addr <= r_col + (r_row * g_COL_NUM);
+        r_write_addr <= r_column + (r_row * g_COL_NUM);
 
 
         -----------------------------------------------------------------------

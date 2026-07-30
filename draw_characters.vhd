@@ -18,12 +18,12 @@ entity draw_characters is
         i_x             :   in  unsigned(9 downto 0);
         i_y             :   in  unsigned(9 downto 0);
         i_ASCII_code    :   in  unsigned(7 downto 0);
-        o_draw          :   in  STD_LOGIC
+        o_draw          :   out STD_LOGIC
     );
 end draw_characters;
 
 architecture RTL of draw_characters is
-    constant c_ZERO_MASK    :   unsigned(9 downto 0)                        :=to_unsigned(0, g_LOG2_SCALE);
+    constant c_ZERO_MASK    :   unsigned(g_LOG2_SCALE-1 downto 0)                        :=to_unsigned(0, g_LOG2_SCALE);
     signal r_x              :   integer range 0 to g_SCREEN_WIDTH-1         :=0;
     signal r_y              :   integer range 0 to g_SCREEN_HEIGHT-1        :=0;
     signal r_x_start_char   :   integer range 0 to g_SCREEN_WIDTH-1         :=0;
