@@ -43,20 +43,10 @@ architecture RTL of draw_cursor is
                     r_cursor <= '0';
 
                 elsif rising_edge(i_clk) then
-                    if r_column < g_COL_NUM -1 then
-                        if ( r_x_div_scale = r_column + 1) and (r_y_div_scale = r_row ) then
-                            r_cursor <= '1';
-                        else
-                            r_cursor <= '0';
-                        end if;
-
-                    else 
-                        if (r_x_div_scale = 0) and (r_y_div_scale = r_row + 1) then
-                            r_cursor <= '1';
-                        else
-                            r_cursor <= '0';
-                        end if;
-
+                    if ( r_x_div_scale = r_column) and (r_y_div_scale = r_row ) then
+                        r_cursor <= '1';
+                    else
+                        r_cursor <= '0';
                     end if;
 
                     --Blinking Cursor

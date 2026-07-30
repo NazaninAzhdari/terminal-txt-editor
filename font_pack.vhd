@@ -110,9 +110,9 @@ package font_pack is
     --------------------------------
     -- ASCII Control characters
     --------------------------------
-    constant pc_ASCII_BACKSPACE     : unsigned(7 downto 0) := to_unsigned(8, 8);
+    constant pc_ASCII_BACKSPACE     : unsigned(7 downto 0) := to_unsigned(127, 8);
     constant pc_ASCII_ENTER         : unsigned(7 downto 0) := to_unsigned(13, 8);
-
+    constant pc_ASCII_SPACE         : unsigned(7 downto 0) := to_unsigned(32, 8);
 
     ----------------------------------------
     -- Bit-Map of CAPITAL LETTERS (A–Z)

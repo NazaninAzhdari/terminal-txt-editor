@@ -119,6 +119,6 @@ architecture RTL of UART_RX is
             --And it becomes low when the start bit of new data is recieved.(by falling edge of the start bit)
             ----------------------------------------------------------------------------------------------------
             o_data_DV <= r_DV;
-            o_data_parallel <= r_shift;
+            o_data_parallel <= r_shift when r_DV = '1';
 
     end RTL;
