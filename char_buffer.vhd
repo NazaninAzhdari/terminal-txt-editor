@@ -40,29 +40,38 @@ architecture RTL of char_buffer is
     --Signals
     signal r_column         :   integer range 0 to g_COL_NUM-1      :=0;
     signal r_row            :   integer range 0 to g_ROW_NUM-1      :=0;
-    signal i                :   integer range 0 to g_RAM_SIZE-1     :=0;
     signal r_write_addr     :   integer range 0 to g_RAM_SIZE-1     :=0;
     signal r_read_addr      :   integer range 0 to g_RAM_SIZE-1     :=0;
     signal r_x_div_scale    :   integer range 0 to g_COL_NUM-1      :=0;
     signal r_y_div_scale    :   integer range 0 to g_ROW_NUM-1      :=0;
 
-    begin
-        dual_port_RAM: process(i_clk) is
-            begin
-                if rising_edge(i_clk) then
-                    if i_reset = '1' then
-                        r_column <= 0;
-                        r_row <= 0;
+    signal clear_index      :   integer range 0 to g_RAM_SIZE-1     :=0;
+    --signal r_clearing       :   STD_LOGIC                           :='0';
+    signal r_reset          :   STD_LOGIC                           :='0';
 
-                        if i <= g_RAM_SIZE-1 then
-                            r_CHAR_RAM(i) <= pc_ASCII_SPACE;
-                            i <= i + 1;
-                            if i > g_RAM_SIZE-1 then
-                                i <= 0;
-                            end if;
+    begin
+        dual_port_RAM: process(i_clk, i_reset, r_reset) is
+            begin
+
+								
+                if rising_edge(i_clk) then
+                    
+						  
+                    -- Clear RAM one address per cycle
+                    if i_reset = '1' then
+								r_row       <= 0;
+                        r_column    <= 0;
+								
+                        r_CHAR_RAM(clear_index) <= pc_ASCII_SPACE;
+
+                        if clear_index = g_RAM_SIZE-1 then
+                            clear_index <= 0;
+                        else
+                            clear_index <= clear_index + 1;
                         end if;
 
                     else
+							clear_index <= 0;
                         --If an ASCII code has recieved, write it into the RAM
                         if i_write_EN = '1' then
                             -- Check out to see what that ASCII code is.

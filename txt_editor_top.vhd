@@ -4,16 +4,16 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity txt_editor_top is
     port (
-        i_clk       :   in      STD_LOGIC;
-        i_reset     :   in      STD_LOGIC;
-        i_UART_RX   :   in      STD_LOGIC; 
+        i_clk               :   in      STD_LOGIC;
+        i_reset             :   in      STD_LOGIC;
+        i_UART_RX           :   in      STD_LOGIC; 
 
         --HDMI Interface
         o_hdmi_CLK          :   out     STD_LOGIC;
         o_hdmi_DE           :   out     STD_LOGIC;
         o_hdmi_HS           :   out     STD_LOGIC;
         o_hdmi_VS           :   out     STD_LOGIC;
-        o_hdmi_video    :   out     unsigned(23 downto 0)
+        o_hdmi_video        :   out     unsigned(23 downto 0)
     );
 end txt_editor_top;
 
@@ -32,8 +32,8 @@ architecture RTL of txt_editor_top is
     constant c_RAM_BIT_WIDTH    :   integer     :=13;                           --Minimum bit-width required to represent the address of RAM from 0 to 4800
     
     signal w_reset              :   STD_LOGIC                               :='0';
-	 signal w_x						  :   unsigned(9 downto 0)  :=(others=>'0');
-	 signal w_y						  :   unsigned(9 downto 0)  :=(others=>'0');
+	signal w_x					:   unsigned(9 downto 0)                    :=(others=>'0');
+	signal w_y					:   unsigned(9 downto 0)                    :=(others=>'0');
     signal w_ascii_code         :   unsigned(7 downto 0)                    :=(others=>'0');
     signal w_ascci_DV           :   STD_LOGIC                               :='0';
     signal w_clk25              :   STD_LOGIC                               :='0';
@@ -93,16 +93,16 @@ architecture RTL of txt_editor_top is
         UART_reciever: entity work.UART_RX
         generic map (
             g_BITS_LIMIT   => 8,
-            g_CLKS_PER_BIT => 217    
+            g_CLKS_PER_BIT => 434    
         )
         port map(
-            i_clk                => W_clk25,
-            i_reset              => w_reset,
+            i_clk                => i_clk,
             i_data_serial        => i_UART_RX,
             o_data_parallel      => w_ascii_code,
             o_data_DV            => w_ascci_DV
         );
-
+		  
+		  
         ----------------------------------------------------------------------
         -- Store the ASCII Characters into a Buffer RAM
         -- READ ascii characters from buffer RAM 
@@ -119,7 +119,7 @@ architecture RTL of txt_editor_top is
             g_RAM_BIT_WIDTH => c_RAM_BIT_WIDTH               --Minimum bit-width required to represent the address of RAM from 0 to 4800
         )
         port map (
-            i_clk           => W_clk25,
+            i_clk           => i_clk,
             i_reset         => w_reset,
             i_write_EN      => w_ASCCI_DV,
             i_ASCII_code    => w_ASCII_code,
