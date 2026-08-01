@@ -9,8 +9,6 @@ use work.font_pack.pc_ASCII_SPACE;
 
 entity char_buffer is
     generic (
-        g_SCALE         :   integer     :=8;                        --Size of Each character
-        g_LOG2_SCALE    :   integer     :=3;                        --log2(scale)
         g_COL_NUM       :   integer     :=80;                       --Maximum number of columns (640 /8)
         g_ROW_NUM       :   integer     :=60;                       --Maximum Number of Rows (480 / 8)
         g_RAM_SIZE      :   integer     :=4800;    					  --Size of RAM (4800)
@@ -24,8 +22,7 @@ entity char_buffer is
         i_write_EN      :   in      STD_LOGIC;
         i_ASCII_code    :   in      unsigned(7 downto 0);
         i_read_EN       :   in      STD_LOGIC;
-        i_x             :   in      unsigned(9 downto 0);
-        i_y             :   in      unsigned(9 downto 0);
+        i_read_addr     :   in      unsigned(g_RAM_BIT_WIDTH-1 downto 0);
         o_ASCII_code    :   out     unsigned(7 downto 0);
         o_column        :   out     unsigned(g_COL_BIT_WIDTH-1 downto 0);
         o_row           :   out     unsigned(g_ROW_BIT_WIDTH-1 downto 0)
@@ -42,28 +39,21 @@ architecture RTL of char_buffer is
     signal r_row            :   integer range 0 to g_ROW_NUM-1      :=0;
     signal r_write_addr     :   integer range 0 to g_RAM_SIZE-1     :=0;
     signal r_read_addr      :   integer range 0 to g_RAM_SIZE-1     :=0;
-    signal r_x_div_scale    :   integer range 0 to g_COL_NUM-1      :=0;
-    signal r_y_div_scale    :   integer range 0 to g_ROW_NUM-1      :=0;
-
     signal clear_index      :   integer range 0 to g_RAM_SIZE-1     :=0;
-    --signal r_clearing       :   STD_LOGIC                           :='0';
-    signal r_reset          :   STD_LOGIC                           :='0';
 
     begin
-        dual_port_RAM: process(i_clk, i_reset, r_reset) is
-            begin
+        r_read_addr <= to_integer(i_read_addr);
 
-								
+        dual_port_RAM: process(i_clk) is
+            begin		
                 if rising_edge(i_clk) then
-                    
-						  
                     -- Clear RAM one address per cycle
                     if i_reset = '1' then
-								r_row       <= 0;
+						r_row       <= 0;
                         r_column    <= 0;
 								
                         r_CHAR_RAM(clear_index) <= pc_ASCII_SPACE;
-
+                        
                         if clear_index = g_RAM_SIZE-1 then
                             clear_index <= 0;
                         else
@@ -71,7 +61,8 @@ architecture RTL of char_buffer is
                         end if;
 
                     else
-							clear_index <= 0;
+
+						clear_index <= 0;
                         --If an ASCII code has recieved, write it into the RAM
                         if i_write_EN = '1' then
                             -- Check out to see what that ASCII code is.
@@ -133,24 +124,6 @@ architecture RTL of char_buffer is
         --  . . .           | . 
         -- (79,59)          | 4799
         r_write_addr <= r_column + (r_row * g_COL_NUM);
-
-
-        -----------------------------------------------------------------------
-        -- Computing the address of RAM based on X/Y cordinates (read address)
-        -----------------------------------------------------------------------
-        -- (X, Y)           | Address
-        -- (0, 0)           | 0
-        -- (1, 0)           | 1
-        -- (2, 0)           | 2
-        --  . . .           | . 
-        -- (0, 1)           | 80
-        -- (1, 1)           | 81
-        -- (2, 1)           | 82
-        --  . . .           | . 
-        -- (79,59)          | 4799
-        r_x_div_scale <= to_integer(i_x(i_x'left downto g_LOG2_SCALE));   -- i_x / SCALE
-        r_y_div_scale <= to_integer(i_y(i_y'left downto g_LOG2_SCALE));   -- i_y / SCALE
-        r_read_addr <= r_x_div_scale + (r_y_div_scale  * g_COL_NUM);
 
         o_column <= to_unsigned(r_column, o_column'length);
         o_row <= to_unsigned(r_row, o_row'length);
