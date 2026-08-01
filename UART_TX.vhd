@@ -28,94 +28,114 @@ entity UART_TX is
 end UART_TX;
 
 architecture RTL of UART_TX is
-    type TX is (IDLE, SEND_START_BIT, SEND_DATA_BITS, SEND_STOP_BIT);
-    signal r_tx             :       TX                                  :=IDLE;
-    signal r_shift          :       unsigned(g_BITS_LIMIT-1 downto 0)   :=(others=>'0');
-    signal r_data_serial    :       STD_LOGIC                           :='0';
-    signal r_bit_counter    :       integer range 0 to 8                :=0;
-    signal r_clk_counter    :       integer range 0 to g_CLKS_PER_BIT   :=0;
-    signal r_tx_done        :       STD_LOGIC                           :='0';
-    signal r_tx_active      :       STD_LOGIC                           :='0';
-    
+
+    type t_state_machine is (IDLE, SEND_START_BIT, SEND_DATA_BITS, SEND_STOP_BIT, CLEAN_UP);
+    signal r_state        : t_state_machine := IDLE;
+
+    signal r_clk_counter  : integer range 0 to g_CLKS_PER_BIT-1   := 0;
+    signal r_bit_counter  : integer range 0 to g_BITS_LIMIT-1     := 0;  -- 8 Bits Total
+    signal r_TX_Data      : unsigned(g_BITS_LIMIT-1 downto 0)     := (others => '0');
+    signal r_TX_Done      : STD_LOGIC                             := '0';
+  
     begin
-        process(i_clk) is
-            begin
-                if rising_edge(i_clk) then
-                    case r_tx is
-                        when IDLE =>
+    process (i_Clk)
+        begin
+            if rising_edge(i_Clk) then
+                
+                r_TX_Done   <= '0';  -- Default assignment
+
+                case r_state is
+                    when IDLE =>
+                        o_TX_Active <= '0';
+                        o_data_serial <= '1';         -- Drive Line High for Idle
+                        r_clk_counter <= 0;
+                        r_bit_counter <= 0;
+
+                        -----------------------------------------------------------
+                        --if i_en is high, register the byte that we want to send
+                        -----------------------------------------------------------
+                        if i_En = '1' then
+                            r_TX_Data <= i_data_byte;
+                            r_state <= SEND_START_BIT;
+                        else
+                            r_state <= IDLE;
+                        end if;
+
+                    ----------------------------------------------------------------------------
+                    -- Send start bit for one bit period (8.68 * 10^-6 Sec.) = 1 / Baud rate
+                    ----------------------------------------------------------------------------
+                    when SEND_START_BIT =>
+                        o_TX_Active <= '1';
+                        o_data_serial <= '0';
+
+                        -- Wait g_CLKS_PER_BIT-1 clock cycles for start bit to finish
+                        if r_clk_counter < g_CLKS_PER_BIT-1 then
+                            r_clk_counter <= r_clk_counter + 1;
+                            r_state   <= SEND_START_BIT;
+                        else
                             r_clk_counter <= 0;
-                            r_bit_counter <= 0;
-                            r_data_serial <= '1';
-                            r_tx_active <= '0';
-                            r_tx_done <= '0';
+                            r_state   <= SEND_DATA_BITS;
+                        end if;
 
-                            -----------------------------------------------------------
-                            --if i_en is high, register the byte that we want to send
-                            -----------------------------------------------------------
-                            if i_en = '1' then
-                                r_shift <= i_data_byte;
-                                r_tx <= SEND_START_BIT;
-                            end if;
-
-                        when SEND_START_BIT =>
-                            ----------------------------------------------------------------------------
-                            -- Send start bit for one bit period (8.68 * 10^-6 Sec.) = 1 / Baud rate
-                            ----------------------------------------------------------------------------
-                            if r_clk_counter < g_CLKS_PER_BIT -1 then
-                                r_clk_counter <= r_clk_counter +1;
-                                r_data_serial <= '0';
-                                r_tx_active <= '1';
-                            else
-                                r_clk_counter <= 0;
-                                r_tx <= SEND_DATA_BITS;
-                            end if;
-                                
-                        when SEND_DATA_BITS =>
-                            if r_bit_counter < 8 then
-                                if r_clk_counter < g_CLKS_PER_BIT -1 then
-                                    r_clk_counter <= r_clk_counter + 1;
-                                    r_data_serial <= r_shift(0);
-                                else
-                                    r_shift(7 downto 0) <= '0' & r_shift(7 downto 1);
-                                    r_clk_counter <= 0;
-                                    r_bit_counter <= r_bit_counter + 1;
-                                end if;
+                    
+                    -- Wait g_CLKS_PER_BIT-1 clock cycles for data bits to finish          
+                    when SEND_DATA_BITS =>
+                        o_data_serial <= r_TX_Data(r_bit_counter);
+                    
+                        if r_clk_counter < g_CLKS_PER_BIT-1 then
+                            r_clk_counter <= r_clk_counter + 1;
+                            r_state   <= SEND_DATA_BITS;
+                        else
+                            r_clk_counter <= 0;
+                            
+                            -- Check if we have sent out all bits
+                            if r_bit_counter < g_BITS_LIMIT-1 then
+                                r_bit_counter <= r_bit_counter + 1;
+                                r_state   <= SEND_DATA_BITS;
                             else
                                 r_bit_counter <= 0;
-                                r_tx <= SEND_STOP_BIT;
+                                r_state   <= SEND_STOP_BIT;
                             end if;
+                        end if;
 
-                        when SEND_STOP_BIT =>
-                            ----------------------------------------------------------------------------
-                            -- Send stop bit for one bit period (8.68 * 10^-6 Sec.) = 1 / Baud rate
-                            ----------------------------------------------------------------------------
-                            if r_clk_counter < g_CLKS_PER_BIT -1 then
-                                r_data_serial <= '1';
-                                r_clk_counter <= r_clk_counter + 1;
-                            else
-                                r_clk_counter <= 0;
-                                r_tx_active <= '0';
-                                r_tx_done <= '1';
-                                r_tx <= IDLE;
-                            end if;
+                    ----------------------------------------------------------------------------
+                    -- Send stop bit for one bit period (8.68 * 10^-6 Sec.) = 1 / Baud rate
+                    ----------------------------------------------------------------------------
+                    when SEND_STOP_BIT =>
+                        o_data_serial <= '1';
 
-                        when others =>
-                            r_tx <= IDLE;
+                        -- Wait g_CLKS_PER_BIT-1 clock cycles for Stop bit to finish
+                        if r_clk_counter < g_CLKS_PER_BIT-1 then
+                            r_clk_counter <= r_clk_counter + 1;
+                            r_state   <= SEND_STOP_BIT;
+                        else
+                            r_TX_Done   <= '1';
+                            r_clk_counter <= 0;
+                            r_state   <= CLEAN_UP;
+                        end if;
 
-                    end case;
-                end if;
-            end process;
+                    ------------------------- 
+                    -- Stay here 1 clock
+                    -------------------------
+                    when CLEAN_UP =>
+                        -------------------------------------------------------------------------------------
+                        -- The o_tx Active becomes low one cycle after the o_tx_done geos high (when the byte is sent.)
+                        -- And it's high when we are in sending process 
+                        --------------------------------------------------------------------------------------
+                        o_TX_Active <= '0';
+                        r_state   <= IDLE;
+                    
+                        
+                    when others =>
+                        r_state <= IDLE;
 
-            ----------------------------------------------------
-            --The o_tx_done geos high when the byte is sent. 
-            --The sata will be sent bit by bit.
-            ----------------------------------------------------
-            o_tx_done <= r_tx_done;
-            o_data_serial <= r_data_serial;
-            
-            -------------------------------------------------------------------------------------
-            -- The o_tx Active becomes low when the o_tx_done geos high (when the byte is sent.)
-            -- And it's high when we are in sending process 
-            --------------------------------------------------------------------------------------
-            o_tx_active <= r_tx_active;
-    end RTL;
+                end case;
+            end if;
+        end process;
+
+        ----------------------------------------------------
+        --The o_tx_done geos high when the byte is sent. 
+        ----------------------------------------------------
+        o_TX_Done <= r_TX_Done;
+  
+end RTL;
