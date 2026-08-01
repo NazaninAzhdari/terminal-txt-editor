@@ -30,7 +30,7 @@ end UART_TX;
 architecture RTL of UART_TX is
 
     type t_state_machine is (IDLE, SEND_START_BIT, SEND_DATA_BITS, SEND_STOP_BIT, CLEAN_UP);
-    signal r_state        : t_state_machine := IDLE;
+    signal r_state        : t_state_machine                       := IDLE;
 
     signal r_clk_counter  : integer range 0 to g_CLKS_PER_BIT-1   := 0;
     signal r_bit_counter  : integer range 0 to g_BITS_LIMIT-1     := 0;  -- 8 Bits Total
