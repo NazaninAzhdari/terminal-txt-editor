@@ -9,8 +9,8 @@ entity txt_editor_top is
         i_start_L           :   in      STD_LOGIC;
         i_TX_start_L        :   in      STD_LOGIC;
 
-		  --LEDs
-		  o_LED					:	out 		unsigned(3 downto 0);
+		--LEDs
+		o_LED			    :	out 	unsigned(3 downto 0);
         
         --UART interface
         i_UART_RX           :   in      STD_LOGIC;
@@ -26,8 +26,9 @@ entity txt_editor_top is
 end txt_editor_top;
 
 architecture RTL of txt_editor_top is
-    constant c_DEBOUNCE_LIMIT   :   integer     :=20000000; --0.4 Sec
-    constant c_BLINK_LIMIT      :   integer     :=25000000; --0.5 Sec
+    --Text Editor's specifications
+    constant c_DEBOUNCE_LIMIT   :   integer     :=20000000;                     --0.4 Sec with 50MHz Clock
+    constant c_BLINK_LIMIT      :   integer     :=25000000;                     --0.5 Sec with 50MHz Clock
     constant c_SCREEN_WIDTH     :   integer     :=640;
     constant c_SCREEN_HEIGHT    :   integer     :=480;
     constant c_SCALE            :   integer     :=8;                            --Size of Each character
@@ -39,6 +40,7 @@ architecture RTL of txt_editor_top is
     constant c_ROW_BIT_WIDTH    :   integer     :=6;                            --minimum bit-width required to represent the rows (.e.g. 0 to 60)
     constant c_RAM_BIT_WIDTH    :   integer     :=13;                           --Minimum bit-width required to represent the address of RAM from 0 to 4800
     
+    --Wiring signals
     signal w_reset              :   STD_LOGIC                               :='0';
 	signal w_x					:   unsigned(9 downto 0)                    :=(others=>'0');
 	signal w_y					:   unsigned(9 downto 0)                    :=(others=>'0');
@@ -68,8 +70,9 @@ architecture RTL of txt_editor_top is
 	signal r_tx_en              :   STD_LOGIC                               :='0';
     signal r_tx_byte            :   unsigned(7 downto 0)                    :=(others=>'0');
 
+    --A state machine for fetch the data from RAM and send it out through UART TX.
     type t_state_machine is (IDLE, PRE_FETCH, LOAD_BYTE, WAIT_TX_HIGH, WAIT_TX_LOW);
-    signal r_state : t_state_machine := IDLE;
+    signal r_state              :   t_state_machine                         := IDLE;
 	
     begin
         ------------------------------
@@ -145,10 +148,9 @@ architecture RTL of txt_editor_top is
             o_data_DV            => w_ascci_DV
         );
 
-        -- only when we are in editing mode, we can write into budder.
+        -- only when we are in editing mode, we can write into buffer.
         r_write_en <= w_ascci_DV when w_editing_en = '1' else '0';
 		  
-	
         ----------------------------------------------------------------------
         -- Store the ASCII Characters into a Buffer RAM
         -- READ ascii characters from buffer RAM 
@@ -209,18 +211,28 @@ architecture RTL of txt_editor_top is
                     case r_state is
                         when IDLE =>
                             r_transfer_done <= '0';
+                            -------------------------------------------------------------
+                            -- if transfering mode becomes activated, 
+                            -- then r_counter gets resets and we fetch the data from RAM
+                            -------------------------------------------------------------
                             r_ram_counter <= 0;
                             if w_transfering_EN = '1' then
                                 r_state <= PRE_FETCH;
                             end if;
-                        
+
+                        -----------------------------------------------------------------------------------------------
+                        --since getting data from dual-port RAM, takes up to 2 clock cycle, we firs pre-fetch the data
+                        ------------------------------------------------------------------------------------------------
                         when PRE_FETCH =>
                             r_tx_byte <= w_read_ascci;
                             r_state <= LOAD_BYTE;
 
+                        ---------------------------------------------------------------------------------
+                        -- After pre-fetch, we fetch the data again to make sure that it is a stable data
+                        ---------------------------------------------------------------------------------
                         when LOAD_BYTE =>
                             r_tx_byte <= w_read_ascci;
-                            r_tx_en  <= '1';        
+                            r_tx_en  <= '1';        --since we have the data, transmitter gets enabled (it's high for one clock cycle)
                             r_state    <= WAIT_TX_HIGH;
 
                         when WAIT_TX_HIGH =>
@@ -228,20 +240,23 @@ architecture RTL of txt_editor_top is
                             r_state <= WAIT_TX_LOW;
 
                         when WAIT_TX_LOW =>
-                            
+                            ---------------------------------------------------------------------
+                            --by each falling-edge of active signal, the counter increases by one
+                            --------------------------------------------------------------------
                             if w_tx_active = '0' and r_tx_active = '1' then
-                                if r_ram_counter = c_RAM_SIZE-1 then
+                                if r_ram_counter = c_RAM_SIZE-1 then    --if all the data has been send by transmitter
                                     r_state <= IDLE;
-                                    r_transfer_done <= '1'; 
+                                    r_transfer_done <= '1';             -- r_transfer-done is high for one clock cycle
                                 else
                                     r_ram_counter <= r_ram_counter + 1;
                                     r_state <= PRE_FETCH;
                                 end if;
                             end if;
-                    end case;
-                end if;
+                        end case;
+                    end if;
             end process;
 
+        -- which address should go to buffer, based on the state that we are in.
         r_read_addr <= to_unsigned(r_ram_counter, r_read_addr'length) when w_transfering_EN = '1' else
                         to_unsigned(r_read_addr_vga, r_read_addr'length);
 
@@ -262,7 +277,7 @@ architecture RTL of txt_editor_top is
             o_TX_Done       => OPEN
         );
 		  
-        -- Drive UART line high when transmitter is not active
+        -- Drive UART line high when transmitter is not active (Stop Bit = 1)
         o_UART_TX <= w_uart_tx when w_TX_Active = '1' else '1';
  
         -----------------------------------------------------

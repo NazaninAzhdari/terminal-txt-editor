@@ -7,7 +7,7 @@ use work.font_pack.ALL;
 
 entity draw_characters is
     generic (
-        g_SCALE         :   integer     :=8;    --Size of Each character
+        g_SCALE         :   integer     :=8;     --Size of Each character
         g_LOG2_SCALE    :   integer     :=3;     --log2(scale)
         g_SCREEN_WIDTH  :   integer     :=640;
         g_SCREEN_HEIGHT :   integer     :=480
@@ -23,7 +23,7 @@ entity draw_characters is
 end draw_characters;
 
 architecture RTL of draw_characters is
-    constant c_ZERO_MASK    :   unsigned(g_LOG2_SCALE-1 downto 0)                        :=to_unsigned(0, g_LOG2_SCALE);
+    constant c_ZERO_MASK    :   unsigned(g_LOG2_SCALE-1 downto 0)           :=to_unsigned(0, g_LOG2_SCALE);
     signal r_x              :   integer range 0 to g_SCREEN_WIDTH-1         :=0;
     signal r_y              :   integer range 0 to g_SCREEN_HEIGHT-1        :=0;
     signal r_x_start_char   :   integer range 0 to g_SCREEN_WIDTH-1         :=0;
@@ -136,7 +136,6 @@ architecture RTL of draw_characters is
                         when pc_ASCII_QUESTION => o_draw <= pc_DRAW_QUESTION(r_y - r_y_start_char)(r_x - r_x_start_char); -- ?
                         when pc_ASCII_AT  => o_draw <= pc_DRAW_AT(r_y - r_y_start_char)(r_x - r_x_start_char); -- @
                         -- Control lines
-                        
                         when pc_ASCII_BACKSPACE => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);
 						when pc_ASCII_SPACE => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);
                         when pc_ASCII_ENTER => o_draw <= pc_DRAW_SPACE(r_y - r_y_start_char)(r_x - r_x_start_char);

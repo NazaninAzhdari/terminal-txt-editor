@@ -32,8 +32,8 @@ architecture RTL of VGAsync is
     constant c_V_TOTAL    :   integer     :=c_V_ACTIVE + c_V_FP + c_V_PULSE + c_V_BP; --525 pixels
 
     --Counter signals to determine the pixel
-    signal r_x    :   integer range 0 to c_H_TOTAL-1    :=0;
-    signal r_y    :   integer range 0 to c_V_TOTAL-1    :=0;
+    signal r_x            :   integer range 0 to c_H_TOTAL-1    :=0;
+    signal r_y            :   integer range 0 to c_V_TOTAL-1    :=0;
 
     begin
         process(i_clk25) is

@@ -32,7 +32,7 @@ end char_buffer;
 architecture RTL of char_buffer is
     --RAM
     type RAM is array ( 0 to g_RAM_SIZE-1) of unsigned(7 downto 0);
-    signal r_CHAR_RAM       :   RAM                                 :=(others=>pc_ASCII_BACKSPACE);
+    signal r_CHAR_RAM       :   RAM                                 :=(others=>pc_ASCII_SPACE);
 
     --Signals
     signal r_column         :   integer range 0 to g_COL_NUM-1      :=0;
@@ -53,7 +53,7 @@ architecture RTL of char_buffer is
                         r_column    <= 0;
 								
                         r_CHAR_RAM(clear_index) <= pc_ASCII_SPACE;
-                        
+        
                         if clear_index = g_RAM_SIZE-1 then
                             clear_index <= 0;
                         else
@@ -61,8 +61,8 @@ architecture RTL of char_buffer is
                         end if;
 
                     else
-
 						clear_index <= 0;
+
                         --If an ASCII code has recieved, write it into the RAM
                         if i_write_EN = '1' then
                             -- Check out to see what that ASCII code is.
@@ -111,7 +111,7 @@ architecture RTL of char_buffer is
             end process;
 
         -----------------------------------------------------------------------
-        -- Computing the address of RAM based on column number and Row number (write address)
+        -- Computing the writing-address of RAM based on column number and Row number 
         -----------------------------------------------------------------------
         -- (Column, Row)    | Address
         -- (0, 0)           | 0

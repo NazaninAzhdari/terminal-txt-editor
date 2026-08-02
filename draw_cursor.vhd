@@ -43,6 +43,7 @@ architecture RTL of draw_cursor is
                     r_cursor <= '0';
 
                 elsif rising_edge(i_clk) then
+                    --Draw the cursor based on the cloumn and row position
                     if ( r_x_div_scale = r_column) and (r_y_div_scale = r_row ) then
                         r_cursor <= '1';
                     else
