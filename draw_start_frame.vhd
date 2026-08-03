@@ -38,36 +38,36 @@ architecture RTL of draw_start_frame is
                 -----------------------------------------------------------------------------
                 if r_y_div_16 = 12 then
                     case r_x_div_16 is
+                        when  11 =>
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_N(r_y_div_2 - 96)(r_x_div_2 - 88); --96 = 12*16/2 and 104 = 11*16/2
+                        when  12 =>
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_A(r_y_div_2 - 96)(r_x_div_2 - 96);
                         when  13 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_N(r_y_div_2 - 96)(r_x_div_2 - 104); --96 = 12*16/2 and 104 = 13*16/2
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_Z(r_y_div_2 - 96)(r_x_div_2 - 104); 
                         when  14 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_A(r_y_div_2 - 96)(r_x_div_2 - 112);
+                            o_draw_start_frame <= pc_DRAW_SPACE(r_y_div_2 - 96)(r_x_div_2 - 112);
                         when  15 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_Z(r_y_div_2 - 96)(r_x_div_2- 120);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_T(r_y_div_2 - 96)(r_x_div_2- 120);
                         when  16 =>
-                            o_draw_start_frame <= pc_DRAW_SPACE(r_y_div_2 - 96)(r_x_div_2- 128);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_E(r_y_div_2 - 96)(r_x_div_2- 128);
                         when  17 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_T(r_y_div_2 - 96)(r_x_div_2- 136);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_X(r_y_div_2 - 96)(r_x_div_2- 136);
                         when  18 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_E(r_y_div_2 - 96)(r_x_div_2- 144);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_T(r_y_div_2 - 96)(r_x_div_2- 144);
                         when  19 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_X(r_y_div_2 - 96)(r_x_div_2- 152);
+                            o_draw_start_frame <= pc_DRAW_SPACE(r_y_div_2 - 96)(r_x_div_2- 152);
                         when  20 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_T(r_y_div_2 - 96)(r_x_div_2- 160);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_E(r_y_div_2 - 96)(r_x_div_2- 160);
                         when  21 =>
-                            o_draw_start_frame <= pc_DRAW_SPACE(r_y_div_2 - 96)(r_x_div_2- 168);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_D(r_y_div_2 - 96)(r_x_div_2- 168);
                         when  22 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_E(r_y_div_2 - 96)(r_x_div_2- 176);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_I(r_y_div_2 - 96)(r_x_div_2- 176);
                         when  23 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_D(r_y_div_2 - 96)(r_x_div_2- 184);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_T(r_y_div_2 - 96)(r_x_div_2- 184);
                         when  24 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_I(r_y_div_2 - 96)(r_x_div_2- 192);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_O(r_y_div_2 - 96)(r_x_div_2- 192);
                         when  25 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_T(r_y_div_2 - 96)(r_x_div_2- 200);
-                        when  26 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_O(r_y_div_2 - 96)(r_x_div_2- 208);
-                        when  27 =>
-                            o_draw_start_frame <= pc_DRAW_CAPITAL_R(r_y_div_2 - 96)(r_x_div_2- 216);
+                            o_draw_start_frame <= pc_DRAW_CAPITAL_R(r_y_div_2 - 96)(r_x_div_2- 200);
                         when others => 
                             o_draw_start_frame <= '0';
                     end case;

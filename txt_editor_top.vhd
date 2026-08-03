@@ -26,7 +26,9 @@ entity txt_editor_top is
 end txt_editor_top;
 
 architecture RTL of txt_editor_top is
+    ----------------------------------
     --Text Editor's specifications
+    ----------------------------------
     constant c_DEBOUNCE_LIMIT   :   integer     :=20000000;                     --0.4 Sec with 50MHz Clock
     constant c_BLINK_LIMIT      :   integer     :=25000000;                     --0.5 Sec with 50MHz Clock
     constant c_SCREEN_WIDTH     :   integer     :=640;
@@ -40,7 +42,19 @@ architecture RTL of txt_editor_top is
     constant c_ROW_BIT_WIDTH    :   integer     :=6;                            --minimum bit-width required to represent the rows (.e.g. 0 to 60)
     constant c_RAM_BIT_WIDTH    :   integer     :=13;                           --Minimum bit-width required to represent the address of RAM from 0 to 4800
     
+    -----------------------------------
+    -- Color Codes
+    -----------------------------------
+    constant c_BLACK            :   unsigned(23 downto 0)                   :=(others=>'0');
+	constant c_WHITE            :   unsigned(23 downto 0)                   :=(others=>'1');
+    constant c_DARK_BLUE        :   unsigned(23 downto 0)                   :="000000000000000001100110";
+    constant c_YELLOW           :   unsigned(23 downto 0)                   :="111111111111111100000000";
+    constant c_GREEN            :   unsigned(23 downto 0)                   :="000000001111111100000000";
+    constant c_RED              :   unsigned(23 downto 0)                   :="111111110000000000000000";
+
+    -----------------
     --Wiring signals
+    -----------------
     signal w_reset              :   STD_LOGIC                               :='0';
 	signal w_x					:   unsigned(9 downto 0)                    :=(others=>'0');
 	signal w_y					:   unsigned(9 downto 0)                    :=(others=>'0');
@@ -69,6 +83,9 @@ architecture RTL of txt_editor_top is
 	signal w_uart_tx            :   STD_LOGIC                               :='0';
 	signal r_tx_en              :   STD_LOGIC                               :='0';
     signal r_tx_byte            :   unsigned(7 downto 0)                    :=(others=>'0');
+    signal w_draw_start_frame   :   STD_LOGIC                               :='0';
+    signal w_draw_tx_frame      :   STD_LOGIC                               :='0';
+    signal w_draw_end_frame     :   STD_LOGIC                               :='0';
 
     --A state machine for fetch the data from RAM and send it out through UART TX.
     type t_state_machine is (IDLE, PRE_FETCH, LOAD_BYTE, WAIT_TX_HIGH, WAIT_TX_LOW);
@@ -321,12 +338,53 @@ architecture RTL of txt_editor_top is
             o_draw_cursor   => w_draw_cursor
         );
 
-        o_HDMI_video <= "111111110000000000000000" when w_start_En = '1' and w_DE = '1' else
-                        (others=>'1') when (w_draw_char = '1' or w_draw_cursor = '1') and w_DE = '1' and w_editing_EN = '1' else 
-                        (others=>'0') when (w_draw_char = '0' and w_draw_cursor = '0') and w_DE = '1' and w_editing_EN = '1' else
-                        "000000001111111100000000" when w_transfering_EN = '1' and w_DE = '1' else
-                        "000000000000000011111111" when w_end_EN = '1' and w_DE = '1' else
-                        (others=>'0');
+        -------------------------------------
+        -- Draw Start Frame
+        -------------------------------------
+        drawing_start_frame: entity work.draw_start_frame
+        port map(
+            i_clk               => i_clk,
+            i_reset             => w_reset,
+            i_x                 => w_x,
+            i_y                 => w_y,
+            o_draw_start_frame  => w_draw_start_frame
+        );
+
+        -------------------------------------
+        -- Draw Transmission Frame
+        -------------------------------------
+        drawing_transmit_frame: entity work.draw_transmit_frame
+        port map(
+            i_clk               => i_clk,
+            i_reset             => w_reset,
+            i_x                 => w_x,
+            i_y                 => w_y,
+            o_draw_TX_frame     => w_draw_tx_frame
+        );
+
+        -------------------------------------
+        -- Draw end Frame
+        -------------------------------------
+        drawing_end_frame: entity work.draw_end_frame
+        port map(
+            i_clk               => i_clk,
+            i_reset             => w_reset,
+            i_x                 => w_x,
+            i_y                 => w_y,
+            o_draw_end_frame    => w_draw_end_frame
+        );
+
+
+        o_HDMI_video <= c_BLACK when w_DE = '0' else
+                    c_YELLOW when w_start_En = '1' and w_draw_start_frame = '1' else --start frame text
+                    c_DARK_BLUE when w_start_En = '1' and w_draw_start_frame = '0' else --start frame background
+                    c_YELLOW when (w_draw_char = '1' or w_draw_cursor = '1')  and w_editing_EN = '1' else --Editor frame text
+                    c_DARK_BLUE when (w_draw_char = '0' and w_draw_cursor = '0') and w_editing_EN = '1' else --Editor frame background
+                    c_RED when w_transfering_En = '1' and w_draw_tx_frame = '1' else --transmission frame text
+                    c_DARK_BLUE when w_transfering_En = '1' and w_draw_tx_frame = '0' else --transmission frame background
+                    c_GREEN when w_end_En = '1' and w_draw_end_frame = '1' else --end frame text
+                    c_DARK_BLUE when w_end_En = '1' and w_draw_end_frame = '0' else --end frame background
+                    c_WHITE;
 								
         o_LED(0) <= '1' when w_start_EN = '1' else '0';
         o_LED(1) <= '1' when w_editing_EN = '1' else '0';

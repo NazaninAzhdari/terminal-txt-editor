@@ -67,7 +67,7 @@ architecture RTL of char_buffer is
                         if i_write_EN = '1' then
                             -- Check out to see what that ASCII code is.
                             if i_ASCII_code = pc_ASCII_BACKSPACE then
-                                r_CHAR_RAM(r_write_addr-1) <= i_ASCII_code;
+                                r_CHAR_RAM(r_write_addr-1) <= pc_ASCII_SPACE;
                                 if r_column > 0 then
                                     r_column <= r_column -1;
                                     r_row <= r_row;
