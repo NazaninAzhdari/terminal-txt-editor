@@ -60,7 +60,13 @@ The overall behavior of the system is managed by the **txt_editor_FSM**. The sys
 ---
 
 ## Setup Guide
-The project has been tested on **Altera Cyclone V GX Starter Kit**. For the Cyclone V GX FPGA Board, I have used the follwing Pinout table:  
+The project has been tested on **Altera Cyclone V GX Starter Kit**. For this Board, I have used the follwing Pinout table:  
 [Click here to open the Pinout-Table.CSV]()  
+
+**Compilation Report**  
+Here is the compilation report for the text editor.  
+The resources used to implement this terminal‑based text editor on the Cyclone V GX FPGA include **382 ALMs**, **209 registers**, **38 pins**, and **38,400 block RAM bits**.  
+
+![Compilation Report](https://github.com/NazaninAzhdari/terminal-txt-editor/blob/main/doc/pic/compilation_report.png)
 
 ---
