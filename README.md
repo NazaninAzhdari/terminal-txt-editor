@@ -16,7 +16,7 @@
 </p>
 
 ---
-This project is a **terminal‑based text editor** designed for the **Cyclone V GX FPGA**. It transforms the FPGA into a standalone text‑editing device: you can create text, modify it, store it in on‑chip RAM, view the output on a VGA monitor through a terminal interface, and finally transmit the completed text to a PC via UART.
+This project is a **terminal‑based text editor** designed for the **Cyclone V GX FPGA**. It transforms the FPGA into a standalone text‑editing device: you can create text, modify it, store it in on‑chip RAM, view the output on a VGA monitor, and finally transmit the completed text to a PC via UART.
 
 ---
 
