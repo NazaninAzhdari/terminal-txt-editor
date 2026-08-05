@@ -61,7 +61,7 @@ The overall behavior of the system is managed by the **txt_editor_FSM**. The sys
 
 ## Setup Guide
 The project has been tested on **Altera Cyclone V GX Starter Kit**. For this Board, I have used the follwing Pinout table:  
-[Click here to open the Pinout-Table.CSV]()  
+[Click here to open the Pinout-Table.CSV](https://github.com/NazaninAzhdari/terminal-txt-editor/blob/main/doc/pinout/pinout_terminal_txt_editor.csv)  
 
 **Compilation Report**  
 Here is the compilation report for the text editor.  
