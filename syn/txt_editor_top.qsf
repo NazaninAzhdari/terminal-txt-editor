@@ -1,0 +1,146 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2013 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition
+# Date created = 11:24:00  July 28, 2026
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		txt_editor_top_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone V"
+set_global_assignment -name DEVICE 5CGXFC5C6F27C7
+set_global_assignment -name TOP_LEVEL_ENTITY txt_editor_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "11:24:00  JULY 28, 2026"
+set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_location_assignment PIN_R20 -to i_clk
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to i_clk
+set_location_assignment PIN_AE10 -to i_reset
+set_instance_assignment -name IO_STANDARD "1.2 V" -to i_reset
+set_location_assignment PIN_Y25 -to o_hdmi_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_CLK
+set_location_assignment PIN_Y26 -to o_hdmi_DE
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_DE
+set_location_assignment PIN_U26 -to o_hdmi_HS
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_HS
+set_location_assignment PIN_AD25 -to o_hdmi_video[23]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[23]
+set_location_assignment PIN_AC25 -to o_hdmi_video[22]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[22]
+set_location_assignment PIN_AB25 -to o_hdmi_video[21]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[21]
+set_location_assignment PIN_AA24 -to o_hdmi_video[20]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[20]
+set_location_assignment PIN_AB26 -to o_hdmi_video[19]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[19]
+set_location_assignment PIN_R26 -to o_hdmi_video[18]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[18]
+set_location_assignment PIN_R24 -to o_hdmi_video[17]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[17]
+set_location_assignment PIN_P21 -to o_hdmi_video[16]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[16]
+set_location_assignment PIN_P26 -to o_hdmi_video[15]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[15]
+set_location_assignment PIN_N25 -to o_hdmi_video[14]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[14]
+set_location_assignment PIN_P23 -to o_hdmi_video[13]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[13]
+set_location_assignment PIN_P22 -to o_hdmi_video[12]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[12]
+set_location_assignment PIN_R25 -to o_hdmi_video[11]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[11]
+set_location_assignment PIN_R23 -to o_hdmi_video[10]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[10]
+set_location_assignment PIN_T26 -to o_hdmi_video[9]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[9]
+set_location_assignment PIN_T24 -to o_hdmi_video[8]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[8]
+set_location_assignment PIN_T23 -to o_hdmi_video[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[7]
+set_location_assignment PIN_U24 -to o_hdmi_video[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[6]
+set_location_assignment PIN_V25 -to o_hdmi_video[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[5]
+set_location_assignment PIN_V24 -to o_hdmi_video[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[4]
+set_location_assignment PIN_W26 -to o_hdmi_video[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[3]
+set_location_assignment PIN_W25 -to o_hdmi_video[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[2]
+set_location_assignment PIN_AA26 -to o_hdmi_video[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[1]
+set_location_assignment PIN_V23 -to o_hdmi_video[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_video[0]
+set_location_assignment PIN_U25 -to o_hdmi_VS
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to o_hdmi_VS
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_location_assignment PIN_M9 -to i_UART_RX
+set_instance_assignment -name IO_STANDARD "2.5 V" -to i_UART_RX
+set_location_assignment PIN_P11 -to i_start_L
+set_location_assignment PIN_P12 -to i_TX_start_L
+set_instance_assignment -name IO_STANDARD "1.2 V" -to i_start_L
+set_instance_assignment -name IO_STANDARD "1.2 V" -to i_TX_start_L
+set_location_assignment PIN_L9 -to o_UART_TX
+set_instance_assignment -name IO_STANDARD "2.5 V" -to o_UART_TX
+set_location_assignment PIN_L7 -to o_LED[0]
+set_location_assignment PIN_K6 -to o_LED[1]
+set_location_assignment PIN_D8 -to o_LED[2]
+set_location_assignment PIN_E9 -to o_LED[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to o_LED[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to o_LED[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to o_LED[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to o_LED[0]
+set_global_assignment -name VHDL_FILE draw_transmit_frame.vhd
+set_global_assignment -name VHDL_FILE draw_start_frame.vhd
+set_global_assignment -name VHDL_FILE draw_end_frame.vhd
+set_global_assignment -name VHDL_FILE UART_TX.vhd
+set_global_assignment -name VHDL_FILE txt_editor_FSM.vhd
+set_global_assignment -name VHDL_FILE VGAsync.vhd
+set_global_assignment -name VHDL_FILE UART_RX.vhd
+set_global_assignment -name VHDL_FILE txt_editor_top.vhd
+set_global_assignment -name VHDL_FILE freq_divider.vhd
+set_global_assignment -name VHDL_FILE font_pack.vhd
+set_global_assignment -name VHDL_FILE draw_cursor.vhd
+set_global_assignment -name VHDL_FILE draw_characters.vhd
+set_global_assignment -name VHDL_FILE debounce_filter.vhd
+set_global_assignment -name VHDL_FILE char_buffer.vhd
+set_global_assignment -name CDF_FILE output_files/Chain1.cdf
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
