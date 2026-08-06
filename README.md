@@ -1,4 +1,19 @@
+<div align="center">
+  <h1>FPGA-Based Text Editor</h1>
+</div>
 
+<p align="center" style="margin-top: 0;">
+  <a href="https://github.com/NazaninAzhdari/terminal-txt-editor" target="_blank" style="text-decoration: none;">
+    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+         alt="GitHub Repo"
+         width="32"
+         height="32"
+         style="vertical-align: middle;">
+    <span style="font-size: 16px; margin-left: 8px; vertical-align: middle;">
+      View the code on GitHub
+    </span>
+  </a>
+</p>
 
 ---
 This project is a **terminal‑based text editor** designed for the **Cyclone V GX FPGA**. It transforms the FPGA into a standalone text‑editing device: you can create text, modify it, store it in Block RAM, view the output on a HDMI monitor, and finally transmit the completed text to a PC via UART.
@@ -80,6 +95,6 @@ The project has been tested on **Altera Cyclone V GX Starter Kit**. For this Boa
 Here is the compilation report for the text editor.  
 The resources used to implement this terminal‑based text editor on the Cyclone V GX FPGA include **382 ALMs**, **209 registers**, **38 pins**, and **38,400 block RAM bits**.  
 
-![Compilation Report](https://nazaninazhdari.github.io/terminal-txt-editor/blob/main/doc/pic/compilation_report.png)
+![Compilation Report](https://nazaninazhdari.github.io/terminal-txt-editor/doc/pic/compilation_report.png)
 
 ---
