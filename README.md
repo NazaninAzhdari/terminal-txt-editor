@@ -25,7 +25,7 @@ This system turns the FPGA into a fully functional text editor. By connecting a 
 
 ---
 
-## System Architecture
+## Data Flow
 In this section, I explain exactly how this Text Editor works, so feel free to read this part to understand the data flow.
 
 ### Data Input (Keyboard to FPGA)
@@ -56,6 +56,34 @@ On the PC side, the **RX.py** script is running. It listens to the serial port, 
 The overall behavior of the system is managed by the **txt_editor_FSM**. The system remains in the **IDLE** state until it is triggered to enter **EDITING** mode. When the text is finished and a physical transmission button is pressed, the state changes to **TRANSFERRING** to begin the export process. when the transmission is done, the systems moves into **DONE** state.
 
 ![Text Editor's State Machine](https://github.com/NazaninAzhdari/terminal-txt-editor/blob/main/doc/pic/text_editor_state_machine.png)
+
+
+---
+## The Logic Behind The System
+There are three important logics behind this text editor.
+
+### The Screen Grid Logic
+The screen grid is the logic that divides the screen into small squares for text. The monitor has a resolution of **640x480 pixels**. Instead of treating it as one big image, the system divides it into small tiles of **8x8 pixels** each.  
+If we divide 640 by 8, we get **80 columns**, and if we divide 480 by 8, we get **60 rows**. This grid creates a total of **4,800 available slots** (80 × 60) for characters to be placed on the screen.
+
+![Screen Grid](https://github.com/NazaninAzhdari/terminal-txt-editor/blob/main/doc/pic/screen_grid.png)
+
+### The Block RAM Logic
+As I said in the data flow section, the `char_buffer` is the internal memory where our typing is actually saved. The reason that I have chosen this buffer to have exactly 4800 locations is to match the number of slots in the screen grid.  
+So each screen slot is connected to its corresponding location in RAM; whatever ASCII value is stored in that location of RAM will be displayed on the screen.
+
+### The Font Pack Logic
+The `font_pack` is the library that explains how to draw each character. The font pack defines every character as an **8x8 grid of bits**. For example, for the letter "A," the font pack tells the system which specific pixels in that 8x8 box should be turned on (colored) and which should be off (background).  
+When the system wants to draw a character, it looks at the **ASCII code** in the block RAM and then asks the `font_pack` for the corresponding **8x8 pixel pattern**.
+
+![Font Package](https://github.com/NazaninAzhdari/terminal-txt-editor/blob/main/doc/pic/font_package.png)
+
+### How They Work Together Simply:
+The **Screen Grid** identifies a location on the monitor (for example, Column 10, Row 5).  
+The **Character Buffer** looks at that specific address in its memory to see which **ASCII code** is stored there.  
+The **Font Pack** provides the **8x8 pixel pattern** for that ASCII code so the `draw_characters` module can light up the correct pixels on screen.
+
+![Whole System](https://github.com/NazaninAzhdari/terminal-txt-editor/blob/main/doc/pic/whole_process.png)
 
 ---
 
