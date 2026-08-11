@@ -24,7 +24,7 @@ This project is a **terminal‑based text editor** designed for the **Cyclone V 
 ---
 
 ## Project Overview
-This system turns the FPGA into a fully functional text editor. By connecting a serial terminal and a VGA display, you can type characters that are stored in the FPGA’s internal memory and rendered on‑screen in real time. The editor supports a **640×480** resolution and provides space for **4,800 characters** (80 columns × 60 rows). When you finish editing, the entire text buffer can be sent to a PC over UART, where a Python script saves it as a standard text file.
+This system turns the FPGA into a fully functional text editor. By connecting a serial terminal and a HDMI display, you can type characters that are stored in the FPGA’s internal memory and rendered on‑screen in real time. The editor supports a **640×480** resolution and provides space for **4,800 characters** (80 columns × 60 rows). When you finish editing, the entire text buffer can be sent to a PC over UART, where a Python script saves it as a standard text file.
 
 ---
 
