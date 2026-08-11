@@ -18,6 +18,9 @@
 ---
 This project is a **terminal‑based text editor** designed for the **Cyclone V GX FPGA**. It transforms the FPGA into a standalone text‑editing device: you can create text, modify it, store it in Block RAM, view the output on a HDMI monitor, and finally transmit the completed text to a PC via UART.
 
+## Watch the demo on youtube (click on the picture below):  
+[![Video](https://img.youtube.com/vi/OInSi4wLXP8/maxresdefault.jpg)](https://youtu.be/OInSi4wLXP8)   
+
 ---
 
 ## Project Overview
